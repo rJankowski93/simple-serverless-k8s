@@ -1,0 +1,19 @@
+kind: ConfigMap
+metadata:
+  name: source-deps
+apiVersion: v1
+data:
+  dependencies: |
+    {
+      "name": "complaint-prev",
+      "version": "1.0.0",
+      "dependencies": {
+          "express": "^4.17.1"
+        }
+    }
+  source: |
+    module.exports = {
+      main: function(event, context) {
+        return "Hello World!"
+      }
+    }

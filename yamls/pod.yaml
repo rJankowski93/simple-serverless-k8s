@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: node
+  name: node
+spec:
+  volumes:
+    - name: source-deps
+      configMap:
+        name: source-deps
+        defaultMode: 420
+    - name: server
+      configMap:
+        name: server
+        defaultMode: 420
+    - name: emptydir
+      emptyDir: {}
+  initContainers:
+    - image: busybox
+      name: init
+      command:
+        - sh
+        - "-c"
+        - |
+          cp /tmp/src/* /sources
+          cp /tmp/server/index.js /sources
+      volumeMounts:
+        - name: emptydir
+          mountPath: /sources
+        - name: source-deps
+          mountPath: /tmp/src/handler.js
+          subPath: source
+        - name: source-deps
+          mountPath: /tmp/src/package.json
+          subPath: dependencies
+        - name: server
+          mountPath: /tmp/server/index.js
+          subPath: index.js
+    - image: node:alpine
+      name: init2
+      command:
+        - sh
+        - "-c"
+        - |
+          cd /sources && npm install
+      volumeMounts:
+        - name: emptydir
+          mountPath: /sources
+  containers:
+    - image: node:alpine
+      name: node
+      command: ["node", "/sources/index.js"]
+      volumeMounts:
+        - name: emptydir
+          mountPath: /sources
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
