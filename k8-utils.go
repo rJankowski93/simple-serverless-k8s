@@ -146,6 +146,22 @@ func getPodObject(name string, namespace string) *core.Pod {
 					},
 				},
 			},
+			Containers: []core.Container{
+				{
+					Name:  name,
+					Image: "node:alpine",
+					Command: []string{
+						"node",
+						"/sources/index.js",
+					},
+					VolumeMounts: []core.VolumeMount{
+						{
+							Name:      "emptydir",
+							MountPath: "/sources",
+						},
+					},
+				},
+			},
 			DNSPolicy:     core.DNSClusterFirst,
 			RestartPolicy: core.RestartPolicyAlways,
 		},
