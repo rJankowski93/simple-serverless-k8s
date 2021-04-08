@@ -44,5 +44,11 @@ func createFunction(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	configMapWithServer := getConfigMapWithServerObject(request["namespace"])
+	_, err = clientset.CoreV1().ConfigMaps(request["namespace"]).Create(context.TODO(), configMapWithServer, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fmt.Println("Function created successfully...")
 }

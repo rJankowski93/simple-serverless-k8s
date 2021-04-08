@@ -17,3 +17,15 @@ func getConfigMapWithSourceObject(name string, namespace string, deps string, so
 		},
 	}
 }
+
+func getConfigMapWithServerObject(namespace string) *core.ConfigMap {
+	return &core.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "server",
+			Namespace: namespace,
+		},
+		Data: map[string]string{
+			"index.js": "    const express = require(\"express\");\n    const main = require(\"./handler\");\n    const app = express();\n    const port = 3000;\n\n    app.get(\"/\", (req, res) => {\n      const ret = main.main(res);\n      console.log(ret);\n      res.send(ret);\n    });\n\n    app.listen(port, () => {\n      console.log(`Example app listening at http://localhost:${port}`);\n    });",
+		},
+	}
+}
