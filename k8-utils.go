@@ -29,3 +29,48 @@ func getConfigMapWithServerObject(namespace string) *core.ConfigMap {
 		},
 	}
 }
+
+func getPodObject(name string, namespace string) *core.Pod {
+	i := int32(420)
+	return &core.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+			Labels: map[string]string{
+				"run": name,
+			},
+		},
+		Spec: core.PodSpec{
+			Volumes: []core.Volume{
+				{
+					Name: "source-deps-" + name,
+					VolumeSource: core.VolumeSource{
+						ConfigMap: &core.ConfigMapVolumeSource{
+							LocalObjectReference: core.LocalObjectReference{Name: "source-deps-" + name},
+							DefaultMode:          &i,
+						},
+					},
+				},
+				{
+					Name: "server",
+					VolumeSource: core.VolumeSource{
+						ConfigMap: &core.ConfigMapVolumeSource{
+							LocalObjectReference: core.LocalObjectReference{Name: "server"},
+							DefaultMode:          &i,
+						},
+					},
+				},
+				{
+					Name: "emptydir",
+					VolumeSource: core.VolumeSource{
+						EmptyDir: &core.EmptyDirVolumeSource{
+							Medium: core.StorageMediumDefault,
+						},
+					},
+				},
+			},
+			DNSPolicy:     core.DNSClusterFirst,
+			RestartPolicy: core.RestartPolicyAlways,
+		},
+	}
+}

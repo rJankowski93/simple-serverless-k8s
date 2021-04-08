@@ -50,5 +50,11 @@ func createFunction(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	pod := getPodObject(request["name"], request["namespace"])
+	_, err = clientset.CoreV1().Pods(request["namespace"]).Create(context.TODO(), pod, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fmt.Println("Function created successfully...")
 }
