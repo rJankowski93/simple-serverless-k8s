@@ -69,6 +69,38 @@ func getPodObject(name string, namespace string) *core.Pod {
 					},
 				},
 			},
+			InitContainers: []core.Container{
+				{
+					Name:  "init",
+					Image: "busybox",
+					Command: []string{
+						"sh",
+						"-c",
+						"cp /tmp/server/index.js /sources",
+					},
+					VolumeMounts: []core.VolumeMount{
+						{
+							Name:      "emptydir",
+							MountPath: "/sources",
+						},
+						{
+							Name:      "source-deps-" + name,
+							MountPath: "/tmp/src/handler.js",
+							SubPath:   "source",
+						},
+						{
+							Name:      "source-deps-" + name,
+							MountPath: "/tmp/src/package.json",
+							SubPath:   "dependencies",
+						},
+						{
+							Name:      "server",
+							MountPath: "/tmp/server/index.js",
+							SubPath:   "index.js",
+						},
+					},
+				},
+			},
 			DNSPolicy:     core.DNSClusterFirst,
 			RestartPolicy: core.RestartPolicyAlways,
 		},
