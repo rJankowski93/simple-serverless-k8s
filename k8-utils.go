@@ -130,6 +130,21 @@ func getPodObject(name string, namespace string) *core.Pod {
 						},
 					},
 				},
+				{
+					Name:  "init3",
+					Image: "node:alpine",
+					Command: []string{
+						"sh",
+						"-c",
+						"cd /sources && npm install",
+					},
+					VolumeMounts: []core.VolumeMount{
+						{
+							Name:      "emptydir",
+							MountPath: "/sources",
+						},
+					},
+				},
 			},
 			DNSPolicy:     core.DNSClusterFirst,
 			RestartPolicy: core.RestartPolicyAlways,
