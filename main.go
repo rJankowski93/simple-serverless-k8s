@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -34,6 +36,12 @@ func createFunction(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&request)
 	if err != nil {
 		panic(err)
+	}
+
+	configMapWithSource := getConfigMapWithSourceObject(request["name"], request["namespace"], request["deps"], request["source"])
+	_, err = clientset.CoreV1().ConfigMaps(request["namespace"]).Create(context.TODO(), configMapWithSource, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	fmt.Println("Function created successfully...")
