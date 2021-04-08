@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -12,7 +10,6 @@ import (
 	"net/http"
 	"path/filepath"
 )
-
 
 var clientset *kubernetes.Clientset
 
@@ -37,31 +34,6 @@ func createFunction(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&request)
 	if err != nil {
 		panic(err)
-	}
-
-	pod := getPodObject(request["name"], request["namespace"])
-	configMapWithSource := getConfigMapWithSourceObject(request)
-	configMapWithServer := getConfigMapWithServerObject(request["namespace"])
-	service := getServiceObject(request["name"], request["namespace"])
-
-	_, err = clientset.CoreV1().ConfigMaps(request["namespace"]).Create(context.TODO(), configMapWithSource, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = clientset.CoreV1().ConfigMaps(request["namespace"]).Create(context.TODO(), configMapWithServer, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = clientset.CoreV1().Pods(request["namespace"]).Create(context.TODO(), pod, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = clientset.CoreV1().Services(request["namespace"]).Create(context.TODO(), service, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
 	}
 
 	fmt.Println("Function created successfully...")
